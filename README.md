@@ -1,75 +1,60 @@
-# React + TypeScript + Vite
+# Framecraft
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Framecraft is the high-performance foundation for a next-generation, purely client-side video editor built with React, WebCodecs, and WebAssembly.
 
-Currently, two official plugins are available:
+Unlike traditional HTML5 `<video>` tags that abstract away rendering, Framecraft takes full control of the decoding and rendering pipeline to enable the precise frame-by-frame scrubbing required for video editing. By leveraging a custom WASM demuxer, Web Workers, and an `OffscreenCanvas`, Framecraft achieves exact frame alignment, accurate A/V synchronization, and ultra-smooth UI interactions—without relying on any server-side processing.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Key Features
 
-## React Compiler
+* **WASM Demuxing**: Uses a custom WebAssembly demuxer (`web-demuxer`) to parse video containers natively in the browser.
+* **WebCodecs API**: Hardware-accelerated decoding of video and audio frames directly in JavaScript.
+* **Multi-Threaded Architecture**: Offloads heavy demuxing and frame rendering to dedicated Web Workers, ensuring the main React UI thread stays at a locked 60fps.
+* **OffscreenCanvas**: Renders decoded video frames to a decoupled canvas element, completely avoiding main-thread DOM repaints.
+* **Master Clock Sync**: Custom A/V synchronization engine ensuring perfect alignment between the WebAudio API and the video render loop.
+* **Modern UI**: Smooth, glassmorphism-inspired player interface with fluid animations powered by Motion (motion.dev).
+* **Zustand State**: Clean, centralized state management for the entire player lifecycle.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠 Tech Stack
 
-## Expanding the ESLint configuration
+- **React 19** (TypeScript, Vite)
+- **WebCodecs & OffscreenCanvas** (Rendering & Decoding)
+- **Web Workers** (Multi-threading)
+- **Zustand** (State Management)
+- **Motion** (motion.dev, UI Animations)
+- **Tabler Icons** (UI Assets)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 📦 Getting Started
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Prerequisites
+Make sure you have Node.js (v18+) and npm installed.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Installation
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yannamsellem/framecraft.git
+   cd framecraft
+   ```
 
-```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+4. Open your browser and navigate to the local server address (usually `http://localhost:5173`).
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🎮 Controls
 
-```
+- **Click / Tap**: Toggle Play/Pause
+- **Spacebar**: Toggle Play/Pause
+- **Left / Right Arrows**: Seek backward or forward by 10 seconds
+- **Esc**: Exit fullscreen mode
+
+## 📜 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
