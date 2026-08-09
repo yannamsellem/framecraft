@@ -1,0 +1,78 @@
+.button {
+  appearance: none;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+
+  height: 36px;
+  min-width: 120px;
+  padding: 0px 20px;
+
+  border-width: 0px;
+  border-radius: 6px;
+  outline: none;
+  box-shadow:
+    0 2px 4px 0 hsla(0, 0%, 0%, 0.1),
+    0 0 8px 0 hsla(0, 0%, 0%, 0.16);
+
+  transition:
+    box-shadow 0.1s ease-in 0s,
+    opacity 0.1s ease-in 0s,
+    background-color 0.1s ease-in 0s,
+    color 0.1s ease-in 0s;
+
+  &:hover,
+  &:active {
+    box-shadow:
+      0 2px 7px 0 hsla(0, 0%, 0%, 0.1),
+      0 0 14px 0 hsla(0, 0%, 0%, 0.14);
+  }
+
+  &.button__primary:not(:disabled) {
+    background-color: var(--primary-color);
+    color: var(--text-main);
+
+    &:hover,
+    &:active {
+      background-color: var(--primary-hover);
+    }
+  }
+
+  &.button__secondary:not(:disabled) {
+    background-color: transparent;
+    color: hsla(210, 4.3%, 45.9%, 1);
+
+    &:hover,
+    &:active {
+      color: hsla(220, 5.5%, 10.8%, 1);
+    }
+  }
+
+  &.button__small {
+    min-width: 90px;
+    font-size: 14px;
+    height: 30px;
+    padding: 0 16px;
+    border-radius: 4px;
+  }
+
+  &.button__rounded {
+    border-radius: 12px;
+  }
+
+  &:disabled {
+    background-color: hsla(220, 15%, 92.2%, 1);
+    box-shadow: none;
+    color: hsla(213, 4.5%, 39%, 1);
+    cursor: default;
+    padding: 0 20px;
+
+    &.small {
+      padding: 0 16px;
+    }
+  }
+}

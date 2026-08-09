@@ -1,0 +1,69 @@
+.App__header {
+  width: 100%;
+  padding: 12px 24px;
+
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  border-block-end: 1px solid var(--border-color);
+
+  & > .App__header__logo {
+    background: linear-gradient(
+      90deg,
+      var(--primary-color) 30%,
+      var(--primary-hover)
+    );
+    color: transparent;
+    background-clip: text;
+  }
+
+  & > .App__header__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+}
+
+.App__main {
+  padding: 24px;
+  height: calc(100% - 72px - 1px);
+  overflow: auto;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.App__player-container {
+  position: relative;
+}
+
+.App__empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px;
+  background: var(--bg-card);
+  border: 1px dashed var(--border-color);
+  border-radius: 16px;
+  gap: 16px;
+  max-width: 500px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.App__empty-state h2 {
+  font-size: 1.5rem;
+  color: #fff;
+  margin: 0;
+}
+
+.App__empty-state p {
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.App__import-btn {
+  margin-top: 16px;
+}

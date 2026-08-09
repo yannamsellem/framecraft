@@ -1,0 +1,23 @@
+{
+  "short_name": "FrameCraft",
+  "name": "FrameCraft - Web Video Editor",
+  "description": "Browser-native video editor for trimming and transcoding videos locally with WebCodecs and WebAssembly.",
+  "icons": [],
+  "start_url": "/",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "display": "standalone",
+  "orientation": "landscape-primary",
+  "categories": ["utilities", "productivity", "multimedia"],
+  "file_handlers": [
+    {
+      "action": "/",
+      "accept": {
+        "video/mp4": [".mp4"],
+        "video/quicktime": [".mov"],
+        "video/webm": [".webm"],
+        "video/x-matroska": [".mkv"]
+      }
+    }
+  ]
+}
