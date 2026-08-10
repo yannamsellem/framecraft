@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react'
 import { useTimelineStore } from '../../store/useTimelineStore'
+import { useEditorStore } from '../../store/useEditorStore'
 import { TimelineBlockView } from './TimelineBlock'
+import { snapToKeyframe } from '../../utils/timeline'
 
 interface Props {
   pxPerSec: number
@@ -9,6 +11,7 @@ interface Props {
 
 export function TimelineTrack({ pxPerSec, duration }: Props) {
   const { blocks, addOrUpdateBlock, setActiveBlock } = useTimelineStore()
+  const { metadata } = useEditorStore()
   const trackRef = useRef<HTMLDivElement>(null)
 
   const [isDrawing, setIsDrawing] = useState(false)
@@ -25,8 +28,9 @@ export function TimelineTrack({ pxPerSec, duration }: Props) {
   const handlePointerDown = (e: React.PointerEvent) => {
     if ((e.target as HTMLElement).classList.contains('TimelineTrack')) {
       const time = getTimeFromEvent(e)
-      setDrawStart(time)
-      setDrawEnd(time)
+      const snappedTime = snapToKeyframe(time, metadata?.keyframes)
+      setDrawStart(snappedTime)
+      setDrawEnd(snappedTime)
       setIsDrawing(true)
       setActiveBlock(null)
       e.currentTarget.setPointerCapture(e.pointerId)
@@ -34,7 +38,10 @@ export function TimelineTrack({ pxPerSec, duration }: Props) {
   }
 
   const handlePointerMove = (e: React.PointerEvent) => {
-    if (isDrawing) setDrawEnd(getTimeFromEvent(e))
+    if (isDrawing) {
+      const time = getTimeFromEvent(e)
+      setDrawEnd(snapToKeyframe(time, metadata?.keyframes))
+    }
   }
 
   const handlePointerUp = (e: React.PointerEvent) => {
@@ -61,6 +68,14 @@ export function TimelineTrack({ pxPerSec, duration }: Props) {
       onPointerCancel={handlePointerUp}
       style={{ width: duration * pxPerSec }}
     >
+      {metadata?.keyframes.map((kf) => (
+        <div
+          key={kf}
+          className="TimelineTrack__keyframe"
+          style={{ left: kf * pxPerSec }}
+        />
+      ))}
+
       {blocks.map((block) => (
         <TimelineBlockView key={block.id} block={block} pxPerSec={pxPerSec} />
       ))}

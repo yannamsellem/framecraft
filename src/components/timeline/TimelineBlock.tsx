@@ -4,6 +4,8 @@ import {
   useTimelineStore,
   type TimelineBlock,
 } from '../../store/useTimelineStore'
+import { useEditorStore } from '../../store/useEditorStore'
+import { snapToKeyframe } from '../../utils/timeline'
 
 interface Props {
   block: TimelineBlock
@@ -32,16 +34,18 @@ export function TimelineBlockView({ block, pxPerSec }: Props) {
 
     const handlePointerUp = () => {
       const timeDelta = deltaX / pxPerSec
+      const keyframes = useEditorStore.getState().metadata?.keyframes
+
       if (interaction === 'left') {
-        addOrUpdateBlock(block.start + timeDelta, block.end, block.id)
+        const newStart = snapToKeyframe(block.start + timeDelta, keyframes)
+        addOrUpdateBlock(newStart, block.end, block.id)
       } else if (interaction === 'right') {
-        addOrUpdateBlock(block.start, block.end + timeDelta, block.id)
+        const newEnd = snapToKeyframe(block.end + timeDelta, keyframes)
+        addOrUpdateBlock(block.start, newEnd, block.id)
       } else if (interaction === 'center') {
-        addOrUpdateBlock(
-          block.start + timeDelta,
-          block.end + timeDelta,
-          block.id,
-        )
+        const duration = block.end - block.start
+        const newStart = snapToKeyframe(block.start + timeDelta, keyframes)
+        addOrUpdateBlock(newStart, newStart + duration, block.id)
       }
       setInteraction(false)
       setDeltaX(0)
@@ -78,17 +82,13 @@ export function TimelineBlockView({ block, pxPerSec }: Props) {
       }}
       onPointerDown={(e) => {
         e.stopPropagation()
-        // Prevent setting active if we are clicking a resize handle
         if (
           (e.target as HTMLElement).classList.contains('TimelineBlock__handle')
         )
           return
+
         setInteraction('center')
-        if (isActive) {
-          setActiveBlock(null)
-        } else {
-          setActiveBlock(block.id)
-        }
+        setActiveBlock(isActive ? null : block.id)
       }}
     >
       <div

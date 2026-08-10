@@ -1,15 +1,16 @@
-import React, { useRef, useCallback, useEffect } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
 import {
-  IconPlayerPlay,
-  IconPlayerPause,
-  IconPlayerSkipBack,
-  IconPlayerSkipForward,
-  IconVolume,
-  IconVolumeOff,
   IconMaximize,
   IconMinimize,
+  IconPlayerPause,
+  IconPlayerPlay,
+  IconPlayerSkipBack,
+  IconRewindBackward10,
+  IconRewindForward10,
+  IconVolume,
+  IconVolumeOff,
 } from '@tabler/icons-react'
+import { AnimatePresence, motion } from 'motion/react'
+import React, { useCallback, useEffect, useRef } from 'react'
 
 const formatTime = (time: number) => {
   if (isNaN(time)) return '00:00'
@@ -135,11 +136,14 @@ export function VideoPlayerControls({
                 )}
               </button>
 
-              <button className="icon-btn" onClick={() => onSeekRelative(-10)}>
+              <button className="icon-btn" onClick={() => onSeekTo(0)}>
                 <IconPlayerSkipBack size={20} />
               </button>
+              <button className="icon-btn" onClick={() => onSeekRelative(-10)}>
+                <IconRewindBackward10 size={20} />
+              </button>
               <button className="icon-btn" onClick={() => onSeekRelative(10)}>
-                <IconPlayerSkipForward size={20} />
+                <IconRewindForward10 size={20} />
               </button>
 
               <div className="VideoPlayerControls__volume-group">
