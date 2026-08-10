@@ -72,7 +72,7 @@
   box-shadow: none;
   color: hsl(var(--text-muted-base) / 0.4);
   border: 1px solid hsl(var(--border-color-base) / 0.04);
-  cursor: not-allowed;
+  cursor: default;
   padding: 0 20px;
 }
 

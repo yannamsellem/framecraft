@@ -9,11 +9,53 @@
 .Timeline__header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 8px 16px;
   background: hsl(var(--bg-dark-base));
   border-bottom: 1px solid hsl(var(--border-color-base) / 0.08);
   font-size: 12px;
   color: hsl(var(--text-muted-base));
+}
+
+.Timeline__controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.Timeline__icon-btn {
+  background: transparent;
+  border: none;
+  color: hsl(var(--text-muted-base));
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.Timeline__icon-btn:hover:not(:disabled) {
+  background: hsl(var(--border-color-base) / 0.1);
+  color: hsl(var(--text-main-base));
+}
+
+.Timeline__icon-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.Timeline__icon-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.Timeline__time {
+  font-variant-numeric: tabular-nums;
+  min-width: 120px;
+  text-align: right;
 }
 
 .Timeline__title {
