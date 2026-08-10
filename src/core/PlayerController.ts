@@ -2,7 +2,7 @@ import { DemuxerService } from './DemuxerService'
 import { RenderService } from './RenderService'
 import { MasterClock } from './clock/MasterClock'
 import { AudioEngine } from './audio/AudioEngine'
-import type { MetadataPayload } from '../workers/demux.worker'
+import type { MetadataPayload } from './types'
 
 export class PlayerController {
   private demuxer: DemuxerService
@@ -80,7 +80,7 @@ export class PlayerController {
         this.audio.configure(metadata.audioConfig)
       }
 
-      this.demuxer.startDemuxing()
+      await this.demuxer.startDemuxing()
     } catch (err) {
       console.error('PlayerController: Failed to load file', err)
       throw err

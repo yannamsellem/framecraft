@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { combine } from 'zustand/middleware'
-import type { MetadataPayload } from '../workers/demux.worker'
+import type { MetadataPayload } from '../core/types'
 
 interface State {
   file: File | null

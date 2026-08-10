@@ -1,4 +1,4 @@
-import type { ChunkPayload } from '../workers/demux.worker'
+import type { ChunkPayload } from './types'
 import type { RenderInputEvent } from '../workers/render.worker'
 
 export class RenderService {

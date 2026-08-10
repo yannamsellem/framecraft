@@ -1,44 +1,13 @@
-import type {
-  MessageOutputEvent,
-  MetadataPayload,
-  ChunkPayload,
-} from '../workers/demux.worker'
+import { WebDemuxer } from 'web-demuxer'
+import type { DemuxerType, MetadataPayload, ChunkPayload } from './types'
 
 export class DemuxerService {
-  private worker: Worker | null = null
+  private demuxer: WebDemuxer | null = null
+  private hasAudioTrack = false
+
   private videoChunkCallback: ((chunk: ChunkPayload) => void) | null = null
   private audioChunkCallback: ((chunk: ChunkPayload) => void) | null = null
   private onCompleteCallback: (() => void) | null = null
-  private metadataResolve: ((meta: MetadataPayload) => void) | null = null
-  private metadataReject: ((err: Error) => void) | null = null
-
-  constructor() {
-    this.worker = new Worker(
-      new URL('../workers/demux.worker.ts', import.meta.url),
-      { type: 'module' },
-    )
-
-    this.worker.onmessage = (e: MessageEvent<MessageOutputEvent>) => {
-      const data = e.data
-      switch (data.type) {
-        case 'METADATA_READY':
-          this.metadataResolve?.(data.payload)
-          break
-        case 'VIDEO_CHUNK':
-          this.videoChunkCallback?.(data.payload)
-          break
-        case 'AUDIO_CHUNK':
-          this.audioChunkCallback?.(data.payload)
-          break
-        case 'DEMUX_COMPLETE':
-          this.onCompleteCallback?.()
-          break
-        case 'ERROR':
-          this.metadataReject?.(new Error(data.error))
-          break
-      }
-    }
-  }
 
   public onVideoChunk(callback: (chunk: ChunkPayload) => void) {
     this.videoChunkCallback = callback
@@ -52,54 +21,149 @@ export class DemuxerService {
     this.onCompleteCallback = callback
   }
 
-  public async getMetadata(file: File) {
-    const { promise, reject, resolve } =
-      Promise.withResolvers<MetadataPayload>()
+  public async getMetadata(file: File): Promise<MetadataPayload> {
+    this.demuxer = new WebDemuxer({
+      wasmFilePath: window.location.origin + '/web-demuxer.wasm',
+    })
+    await this.demuxer.load(file)
 
-    if (!this.worker) {
-      reject(new Error('Worker is not initialized or has been terminated.'))
-      return promise
+    const mediaInfo = await this.demuxer.getMediaInfo()
+    const videoTrack = mediaInfo.streams.find(
+      (s) => s.codec_type_string === 'video',
+    )
+    const audioTrack = mediaInfo.streams.find(
+      (s) => s.codec_type_string === 'audio',
+    )
+
+    if (!videoTrack) {
+      throw new Error('No video track found in the file.')
     }
 
-    const handleMessage = ({ data }: MessageEvent<MessageOutputEvent>) => {
-      const { type } = data
+    this.hasAudioTrack = !!audioTrack
 
-      if (type === 'METADATA_READY') {
-        cleanup()
-        resolve(data.payload)
-      } else if (type === 'ERROR') {
-        cleanup()
-        reject(new Error(data.error))
+    let fps = 30
+    if (videoTrack.avg_frame_rate && videoTrack.avg_frame_rate.includes('/')) {
+      const [num, den] = videoTrack.avg_frame_rate.split('/')
+      if (num && den && parseInt(den) > 0) {
+        fps = Math.floor(parseInt(num) / parseInt(den))
       }
     }
 
-    const handleError = (error: ErrorEvent) => {
-      cleanup()
-      reject(new Error(`Worker error: ${error.message}`))
+    const keyframes: number[] = []
+    const stream = this.demuxer.readMediaPacket('video')
+    const reader = stream.getReader()
+
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+
+      if (value && value.keyframe === 1) {
+        keyframes.push(value.timestamp)
+      }
     }
 
-    const cleanup = () => {
-      this.worker?.removeEventListener('message', handleMessage)
-      this.worker?.removeEventListener('error', handleError)
+    const videoConfig = await this.demuxer.getDecoderConfig('video')
+    let audioConfig: AudioDecoderConfig | undefined
+    if (this.hasAudioTrack) {
+      try {
+        audioConfig = await this.demuxer.getDecoderConfig('audio')
+      } catch (e) {
+        console.warn('Failed to generate audio decoder config:', e)
+        this.hasAudioTrack = false
+      }
     }
 
-    this.worker.addEventListener('message', handleMessage)
-    this.worker.addEventListener('error', handleError)
+    let containerType: DemuxerType = 'unknown'
+    if (
+      mediaInfo.format_name?.includes('mp4') ||
+      mediaInfo.format_name?.includes('mov')
+    ) {
+      containerType = 'isobmff'
+    } else if (
+      mediaInfo.format_name?.includes('webm') ||
+      mediaInfo.format_name?.includes('matroska')
+    ) {
+      containerType = 'ebml'
+    }
 
-    this.worker.postMessage({ type: 'LOAD_FILE', file })
-
-    return promise
+    return {
+      type: containerType,
+      duration: videoTrack.duration || mediaInfo.duration || 0,
+      fps,
+      width: videoTrack.width || 0,
+      height: videoTrack.height || 0,
+      codec: videoTrack.codec_name || 'unknown',
+      keyframes,
+      videoConfig,
+      audioConfig,
+    }
   }
 
-  public startDemuxing() {
-    this.worker?.postMessage({ type: 'START_DEMUXING' })
+  public async startDemuxing() {
+    if (!this.demuxer) return
+
+    const streamVideo = async () => {
+      if (!this.demuxer) return
+      const stream = this.demuxer.readMediaPacket('video', 0)
+      const reader = stream.getReader()
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        if (value) {
+          const payload: ChunkPayload = {
+            type: value.keyframe === 1 ? 'key' : 'delta',
+            timestamp: Math.round(value.timestamp * 1_000_000), // convert to microseconds
+            duration: Math.round((value.duration || 0) * 1_000_000), // convert to microseconds
+            data: value.data.buffer.slice(
+              value.data.byteOffset,
+              value.data.byteOffset + value.data.byteLength,
+            ) as ArrayBuffer,
+          }
+          this.videoChunkCallback?.(payload)
+        }
+      }
+    }
+
+    const streamAudio = async () => {
+      if (!this.demuxer) return
+      const stream = this.demuxer.readMediaPacket('audio', 0)
+      const reader = stream.getReader()
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        if (value) {
+          const payload: ChunkPayload = {
+            type: value.keyframe === 1 ? 'key' : 'delta',
+            timestamp: Math.round(value.timestamp * 1_000_000), // convert to microseconds
+            duration: Math.round((value.duration || 0) * 1_000_000), // convert to microseconds
+            data: value.data.buffer.slice(
+              value.data.byteOffset,
+              value.data.byteOffset + value.data.byteLength,
+            ) as ArrayBuffer,
+          }
+          this.audioChunkCallback?.(payload)
+        }
+      }
+    }
+
+    try {
+      await streamVideo()
+      if (this.hasAudioTrack) await streamAudio()
+
+      this.onCompleteCallback?.()
+    } catch (err) {
+      console.error('Demuxing failed', err)
+    }
   }
 
-  /**
-   * Terminates the worker to free up memory.
-   */
   public terminate() {
-    this.worker?.terminate()
-    this.worker = null
+    if (this.demuxer) {
+      this.demuxer.destroy()
+      this.demuxer = null
+    }
   }
 }

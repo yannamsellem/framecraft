@@ -1,4 +1,4 @@
-import type { ChunkPayload } from '../../workers/demux.worker'
+import type { ChunkPayload } from '../types'
 
 export class AudioEngine {
   private decoder: AudioDecoder | null = null

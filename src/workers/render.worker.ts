@@ -1,5 +1,5 @@
 /// <reference lib="webworker" />
-import type { ChunkPayload } from './demux.worker'
+import type { ChunkPayload } from '../core/types'
 
 export type RenderInputEvent =
   | { type: 'INIT'; canvas: OffscreenCanvas }
