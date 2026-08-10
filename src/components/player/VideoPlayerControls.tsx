@@ -10,7 +10,7 @@ import {
   IconVolumeOff,
 } from '@tabler/icons-react'
 import { AnimatePresence, motion } from 'motion/react'
-import React, { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 
 const formatTime = (time: number) => {
   if (isNaN(time)) return '00:00'
@@ -105,7 +105,6 @@ export function VideoPlayerControls({
           onHoverStart={onMouseEnter}
           onHoverEnd={onMouseLeave}
         >
-          {/* Scrubber */}
           <div
             className="VideoPlayerControls__scrubber-container"
             ref={scrubberRef}
@@ -128,7 +127,10 @@ export function VideoPlayerControls({
 
           <div className="VideoPlayerControls__bottom">
             <div className="VideoPlayerControls__group">
-              <button className="icon-btn" onClick={onTogglePlayback}>
+              <button
+                className="VideoPlayerControls__icon-btn"
+                onClick={onTogglePlayback}
+              >
                 {isPlaying ? (
                   <IconPlayerPause size={24} />
                 ) : (
@@ -136,18 +138,30 @@ export function VideoPlayerControls({
                 )}
               </button>
 
-              <button className="icon-btn" onClick={() => onSeekTo(0)}>
+              <button
+                className="VideoPlayerControls__icon-btn"
+                onClick={() => onSeekTo(0)}
+              >
                 <IconPlayerSkipBack size={20} />
               </button>
-              <button className="icon-btn" onClick={() => onSeekRelative(-10)}>
+              <button
+                className="VideoPlayerControls__icon-btn"
+                onClick={() => onSeekRelative(-10)}
+              >
                 <IconRewindBackward10 size={20} />
               </button>
-              <button className="icon-btn" onClick={() => onSeekRelative(10)}>
+              <button
+                className="VideoPlayerControls__icon-btn"
+                onClick={() => onSeekRelative(10)}
+              >
                 <IconRewindForward10 size={20} />
               </button>
 
               <div className="VideoPlayerControls__volume-group">
-                <button className="icon-btn" onClick={onToggleMute}>
+                <button
+                  className="VideoPlayerControls__icon-btn"
+                  onClick={onToggleMute}
+                >
                   {isMuted || volume === 0 ? (
                     <IconVolumeOff size={20} />
                   ) : (
@@ -171,7 +185,10 @@ export function VideoPlayerControls({
             </div>
 
             <div className="VideoPlayerControls__group">
-              <button className="icon-btn" onClick={onToggleFullscreen}>
+              <button
+                className="VideoPlayerControls__icon-btn"
+                onClick={onToggleFullscreen}
+              >
                 {isFullscreen ? (
                   <IconMinimize size={20} />
                 ) : (

@@ -1,6 +1,6 @@
+import cx from 'classnames'
 import type { ButtonHTMLAttributes, DetailedHTMLProps } from 'react'
 import './Button.css'
-import cx from 'classnames'
 
 type DefaultButtonProps = DetailedHTMLProps<
   ButtonHTMLAttributes<HTMLButtonElement>,
@@ -24,11 +24,11 @@ export function Button({
   return (
     <button
       className={cx(
-        'button',
+        'Button',
         {
-          button__primary: variant === 'primary',
-          button__small: small,
-          button__rounded: rounded,
+          [`Button--${variant}`]: true,
+          'Button--small': small,
+          'Button--rounded': rounded,
         },
         className,
       )}

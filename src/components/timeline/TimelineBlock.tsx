@@ -1,10 +1,11 @@
+import cx from 'classnames'
 import { motion } from 'motion/react'
 import { useEffect, useState } from 'react'
+import { useEditorStore } from '../../store/useEditorStore'
 import {
   useTimelineStore,
   type TimelineBlock,
 } from '../../store/useTimelineStore'
-import { useEditorStore } from '../../store/useEditorStore'
 import { snapToKeyframe } from '../../utils/timeline'
 
 interface Props {
@@ -75,7 +76,7 @@ export function TimelineBlockView({ block, pxPerSec }: Props) {
 
   return (
     <motion.div
-      className={`TimelineBlock ${isActive ? 'TimelineBlock--active' : ''}`}
+      className={cx('TimelineBlock', { 'TimelineBlock--active': isActive })}
       style={{
         left: finalLeft,
         width: Math.max(10, finalWidth),

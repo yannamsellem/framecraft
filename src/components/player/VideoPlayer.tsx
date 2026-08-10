@@ -1,16 +1,17 @@
 import {
-  IconLoader2,
   IconPlayerPause,
   IconPlayerPlay,
   IconRewindBackward10,
   IconRewindForward10,
 } from '@tabler/icons-react'
+import cx from 'classnames'
 import { AnimatePresence, motion } from 'motion/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAutoResetState } from '../../hooks/useAutoResetState'
 import { useIsFullScreen } from '../../hooks/useIsFullscreen'
 import { usePlayer } from '../../hooks/usePlayer'
 import { useEditorStore } from '../../store/useEditorStore'
+import { Spinner } from '../Spinner'
 import './VideoPlayer.css'
 import { VideoPlayerControls } from './VideoPlayerControls'
 
@@ -35,7 +36,7 @@ export function VideoPlayer() {
 
   const [playbackEffect, setPlaybackEffect] = useAutoResetState<
     'play' | 'pause' | 'forward' | 'backward' | null
-  >(null, { after: 100 })
+  >(null, { after: 150 })
 
   const handleMouseMove = () => {
     setIsHovering(true)
@@ -123,7 +124,9 @@ export function VideoPlayer() {
   return (
     <div
       ref={containerRef}
-      className={`VideoPlayer ${isFullscreen && !showControls ? 'hide-cursor' : ''}`}
+      className={cx('VideoPlayer', {
+        'VideoPlayer--hide-cursor': isFullscreen && !showControls,
+      })}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
@@ -136,7 +139,7 @@ export function VideoPlayer() {
         <AnimatePresence>
           {isPristine && !isLoading && (
             <motion.div
-              className="VideoPlayer__center-icon pristine-play VideoPlayer__center-icon-bg"
+              className="VideoPlayer__center-icon VideoPlayer__pristine-play VideoPlayer__center-icon-bg"
               initial={{ opacity: 0, scale: 0.8, x: '-50%', y: '-50%' }}
               animate={{ opacity: 1, scale: 1, x: '-50%', y: '-50%' }}
               exit={{ opacity: 0, scale: 1.2, x: '-50%', y: '-50%' }}
@@ -175,7 +178,7 @@ export function VideoPlayer() {
 
         {isLoading && (
           <div className="VideoPlayer__loading">
-            <IconLoader2 className="spinner" size={48} stroke={1.5} />
+            <Spinner size={48} />
             <p>Processing media...</p>
           </div>
         )}

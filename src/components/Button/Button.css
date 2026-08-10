@@ -1,4 +1,4 @@
-.button {
+.Button {
   appearance: none;
   cursor: pointer;
 
@@ -24,55 +24,55 @@
     opacity 0.1s ease-in 0s,
     background-color 0.1s ease-in 0s,
     color 0.1s ease-in 0s;
+}
 
-  &:hover,
-  &:active {
-    box-shadow:
-      0 2px 7px 0 hsla(0, 0%, 0%, 0.1),
-      0 0 14px 0 hsla(0, 0%, 0%, 0.14);
-  }
+.Button:hover,
+.Button:active {
+  box-shadow:
+    0 2px 7px 0 hsla(0, 0%, 0%, 0.1),
+    0 0 14px 0 hsla(0, 0%, 0%, 0.14);
+}
 
-  &.button__primary:not(:disabled) {
-    background-color: var(--primary-color);
-    color: var(--text-main);
+.Button--primary:not(:disabled) {
+  background-color: hsl(var(--primary-base));
+  color: hsl(var(--text-main-base));
+}
 
-    &:hover,
-    &:active {
-      background-color: var(--primary-hover);
-    }
-  }
+.Button--primary:not(:disabled):hover,
+.Button--primary:not(:disabled):active {
+  background-color: hsl(var(--primary-hover-base));
+}
 
-  &.button__secondary:not(:disabled) {
-    background-color: transparent;
-    color: hsla(210, 4.3%, 45.9%, 1);
+.Button--secondary:not(:disabled) {
+  background-color: transparent;
+  color: hsla(210, 4.3%, 45.9%, 1);
+}
 
-    &:hover,
-    &:active {
-      color: hsla(220, 5.5%, 10.8%, 1);
-    }
-  }
+.Button--secondary:not(:disabled):hover,
+.Button--secondary:not(:disabled):active {
+  color: hsl(var(--text-main-base));
+}
 
-  &.button__small {
-    min-width: 90px;
-    font-size: 14px;
-    height: 30px;
-    padding: 0 16px;
-    border-radius: 4px;
-  }
+.Button--small {
+  min-width: 90px;
+  font-size: 14px;
+  height: 30px;
+  padding: 0 16px;
+  border-radius: 4px;
+}
 
-  &.button__rounded {
-    border-radius: 12px;
-  }
+.Button--rounded {
+  border-radius: 12px;
+}
 
-  &:disabled {
-    background-color: hsla(220, 15%, 92.2%, 1);
-    box-shadow: none;
-    color: hsla(213, 4.5%, 39%, 1);
-    cursor: default;
-    padding: 0 20px;
+.Button:disabled {
+  background-color: hsla(220, 15%, 92.2%, 1);
+  box-shadow: none;
+  color: hsla(213, 4.5%, 39%, 1);
+  cursor: default;
+  padding: 0 20px;
+}
 
-    &.small {
-      padding: 0 16px;
-    }
-  }
+.Button.Button--small:disabled {
+  padding: 0 16px;
 }

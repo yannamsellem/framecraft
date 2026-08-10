@@ -1,16 +1,16 @@
 import { IconUpload } from '@tabler/icons-react'
-import { useCallback, useRef } from 'react'
 import './App.css'
 import { Button } from './components/Button'
 import { VideoPlayer } from './components/player/VideoPlayer'
 import { Timeline } from './components/timeline/Timeline'
 import { useEditorStore } from './store/useEditorStore'
 
-function App() {
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const { file, setFile } = useEditorStore()
+function handleImportClick() {
+  document.getElementById('file-upload')?.click()
+}
 
-  const handleImportClick = useCallback(() => fileInputRef.current?.click(), [])
+export default function App() {
+  const { file, setFile } = useEditorStore()
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -21,13 +21,13 @@ function App() {
   }
 
   return (
-    <>
-      <header className="App__header">
-        <h1 className="App__header__logo">FrameCraft</h1>
-        <div className="App__header__actions">
+    <div className="App">
+      <header className="AppHeader">
+        <h1 className="AppHeader__logo">FrameCraft</h1>
+        <div className="AppHeader__actions">
           <input
             type="file"
-            ref={fileInputRef}
+            id="file-upload"
             style={{ display: 'none' }}
             accept="video/*"
             onChange={handleFileChange}
@@ -39,26 +39,29 @@ function App() {
           )}
         </div>
       </header>
-      <main className="App__main">
-        <div className="App__player-container">
+
+      <main className="AppMain">
+        <div className="AppPlayerContainer">
           {file ? (
             <>
               <VideoPlayer />
               <Timeline />
             </>
           ) : (
-            <div className="App__empty-state">
+            <div className="AppEmptyState">
               <h2>Welcome to FrameCraft</h2>
-              <p>Import a media file to start editing</p>
-              <Button onClick={handleImportClick} className="App__import-btn">
-                <IconUpload stroke={2} size={20} /> Select Video
+              <p>Import a video file to start editing in the browser.</p>
+              <Button
+                className="AppEmptyState__import-btn"
+                onClick={handleImportClick}
+              >
+                <IconUpload size={20} />
+                Select Video
               </Button>
             </div>
           )}
         </div>
       </main>
-    </>
+    </div>
   )
 }
-
-export default App

@@ -1,0 +1,13 @@
+.Spinner {
+  animation: Spinner-spin 1s linear infinite;
+  color: hsl(var(--primary-base));
+}
+
+@keyframes Spinner-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
