@@ -3,6 +3,7 @@ import { useCallback, useRef } from 'react'
 import './App.css'
 import { Button } from './components/Button'
 import { VideoPlayer } from './components/player/VideoPlayer'
+import { Timeline } from './components/timeline/Timeline'
 import { useEditorStore } from './store/useEditorStore'
 
 function App() {
@@ -31,15 +32,20 @@ function App() {
             accept="video/*"
             onChange={handleFileChange}
           />
-          <Button small onClick={handleImportClick}>
-            <IconUpload stroke={2} size={16} /> Import Media
-          </Button>
+          {file && (
+            <Button small onClick={handleImportClick}>
+              <IconUpload stroke={2} size={16} /> Import Video
+            </Button>
+          )}
         </div>
       </header>
       <main className="App__main">
         <div className="App__player-container">
           {file ? (
-            <VideoPlayer />
+            <>
+              <VideoPlayer />
+              <Timeline />
+            </>
           ) : (
             <div className="App__empty-state">
               <h2>Welcome to FrameCraft</h2>

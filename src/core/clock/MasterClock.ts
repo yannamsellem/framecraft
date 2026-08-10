@@ -81,7 +81,7 @@ export class MasterClock {
       this.ctx!.resume().catch((e) => console.error(e))
     }
 
-    if (fromTime !== undefined) {
+    if (typeof fromTime === 'number') {
       this.pausedTime = fromTime
     }
 

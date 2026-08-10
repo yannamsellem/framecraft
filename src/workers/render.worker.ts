@@ -33,7 +33,7 @@ self.onmessage = async (e: MessageEvent<RenderInputEvent>) => {
       break
 
     case 'CONFIGURE':
-      if (decoder && decoder.state === 'configured') {
+      if (decoder?.state === 'configured') {
         decoder.reset()
       }
       masterChunkQueue = []
@@ -57,7 +57,7 @@ self.onmessage = async (e: MessageEvent<RenderInputEvent>) => {
       break
 
     case 'FLUSH':
-      if (decoder && decoder.state === 'configured') {
+      if (decoder?.state === 'configured') {
         await decoder.flush()
       }
       break
@@ -65,9 +65,7 @@ self.onmessage = async (e: MessageEvent<RenderInputEvent>) => {
     case 'RESET':
       if (decoder && decoder.state !== 'closed') {
         decoder.reset()
-        if (currentConfig) {
-          decoder.configure(currentConfig)
-        }
+        if (currentConfig) decoder.configure(currentConfig)
       }
 
       pendingFrames.forEach((f) => f.close())
@@ -75,7 +73,7 @@ self.onmessage = async (e: MessageEvent<RenderInputEvent>) => {
       lastDrawnTime = -1
       seekTargetTimeInSeconds = data.time
 
-      if (data.time !== undefined) {
+      if (typeof data.time === 'number') {
         const targetMicros = data.time * 1_000_000
         // Find nearest keyframe before or exactly at target time
         let startIdx = 0

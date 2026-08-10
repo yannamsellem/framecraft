@@ -1,7 +1,8 @@
+import type { TimelineBlock } from '../store/useTimelineStore'
 import { DemuxerService } from './DemuxerService'
 import { RenderService } from './RenderService'
-import { MasterClock } from './clock/MasterClock'
 import { AudioEngine } from './audio/AudioEngine'
+import { MasterClock } from './clock/MasterClock'
 import type { MetadataPayload } from './types'
 
 export class PlayerController {
@@ -18,28 +19,31 @@ export class PlayerController {
 
   private duration: number = 0
 
+  private blocks: TimelineBlock[] = []
+  private activeBlockId: string | null = null
+
+  public setTimelineState(
+    blocks: TimelineBlock[],
+    activeBlockId: string | null,
+  ) {
+    this.blocks = blocks
+    this.activeBlockId = activeBlockId
+  }
+
   constructor() {
     this.demuxer = new DemuxerService()
     this.renderer = new RenderService()
     this.clock = new MasterClock()
     this.audio = new AudioEngine()
 
-    // Wire internal chunk streams together
-    this.demuxer.onVideoChunk((chunk) => {
-      this.renderer.sendChunk(chunk)
-    })
-
-    this.demuxer.onAudioChunk((chunk) => {
-      this.audio.sendChunk(chunk)
-    })
+    this.demuxer.onVideoChunk((chunk) => this.renderer.sendChunk(chunk))
+    this.demuxer.onAudioChunk((chunk) => this.audio.sendChunk(chunk))
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.demuxer.onComplete(async () => {
       const audioCtx = this.clock.getAudioContext()
       const buffer = await this.audio.getAudioBuffer(audioCtx)
-      if (buffer) {
-        this.clock.setAudioBuffer(buffer)
-      }
+      if (buffer) this.clock.setAudioBuffer(buffer)
     })
   }
 
@@ -116,21 +120,73 @@ export class PlayerController {
     return this.clock.getIsPlaying()
   }
 
+  private syncWithTimeline(time: number): number {
+    if (this.activeBlockId) {
+      return this.handleLoopMode(time, this.blocks, this.activeBlockId)
+    }
+
+    if (this.blocks.length > 0) {
+      return this.handleGlobalMode(time, this.blocks)
+    }
+
+    return time
+  }
+
+  private handleLoopMode(
+    time: number,
+    blocks: TimelineBlock[],
+    activeBlockId: string,
+  ): number {
+    const activeBlock = blocks.find((b) => b.id === activeBlockId)
+    if (!activeBlock) return time
+
+    if (time < activeBlock.start || time >= activeBlock.end) {
+      this.seek(activeBlock.start)
+      return activeBlock.start
+    }
+    return time
+  }
+
+  private handleGlobalMode(time: number, blocks: TimelineBlock[]): number {
+    const currentBlock = blocks.find((b) => time >= b.start && time < b.end)
+
+    if (!currentBlock) {
+      const nextBlock = blocks.find((b) => b.start > time)
+      if (nextBlock) {
+        this.seek(nextBlock.start)
+        return nextBlock.start
+      }
+    }
+
+    return time
+  }
+
+  private handlePlaybackEnd(time: number): number | false {
+    const endTime =
+      this.blocks.length > 0
+        ? this.blocks[this.blocks.length - 1].end
+        : this.duration
+
+    if (endTime > 0 && time >= endTime) {
+      this.seek(endTime)
+      this.pause()
+      this.playbackEndCallback?.()
+      return endTime
+    }
+
+    return false
+  }
+
   private startLoop() {
     cancelAnimationFrame(this.rafId)
 
     const loop = () => {
-      let time = this.clock.getCurrentTime()
+      let time = this.syncWithTimeline(this.clock.getCurrentTime())
 
-      if (this.duration > 0 && time >= this.duration) {
-        time = this.duration
-        this.clock.seek(time)
-        this.pause()
-        this.playbackEndCallback?.()
-      }
+      const endedTime = this.handlePlaybackEnd(time)
+      if (typeof endedTime === 'number') time = endedTime
 
       this.timeUpdateCallback?.(time)
-
       this.renderer.sync(time)
 
       if (this.clock.getIsPlaying()) {

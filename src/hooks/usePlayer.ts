@@ -1,6 +1,7 @@
 import { useEffect, useCallback, useRef } from 'react'
 import { PlayerController } from '../core/PlayerController'
 import { useEditorStore } from '../store/useEditorStore'
+import { useTimelineStore } from '../store/useTimelineStore'
 
 export const usePlayer = () => {
   const {
@@ -57,18 +58,28 @@ export const usePlayer = () => {
   // Sync muted state
   useEffect(() => controllerRef.current?.setMuted(isMuted), [isMuted])
 
+  // Sync timeline state with controller
+  const { blocks, activeBlockId } = useTimelineStore()
+  useEffect(
+    () => controllerRef.current?.setTimelineState(blocks, activeBlockId),
+    [blocks, activeBlockId],
+  )
+
   const togglePlayback = useCallback(() => {
     const currentState = useEditorStore.getState()
-    const atEnd =
-      currentState.duration > 0 &&
-      currentState.currentTime >= currentState.duration
+    const { blocks } = useTimelineStore.getState()
+
+    const endTime =
+      blocks.length > 0 ? blocks[blocks.length - 1].end : currentState.duration
+    const atEnd = endTime > 0 && currentState.currentTime >= endTime
 
     if (isPlaying) {
       controllerRef.current?.pause()
     } else {
       if (atEnd) {
-        controllerRef.current?.seek(0)
-        controllerRef.current?.play(0)
+        const start = blocks.length > 0 ? blocks[0].start : 0
+        controllerRef.current?.seek(start)
+        controllerRef.current?.play(start)
       } else {
         controllerRef.current?.play(currentState.currentTime)
       }
