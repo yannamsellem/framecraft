@@ -44,13 +44,15 @@
 }
 
 .Button--secondary:not(:disabled) {
-  background-color: transparent;
-  color: hsla(210, 4.3%, 45.9%, 1);
+  background-color: hsl(var(--border-color-base) / 0.05);
+  color: hsl(var(--text-main-base));
+  border: 1px solid hsl(var(--border-color-base) / 0.1);
 }
 
 .Button--secondary:not(:disabled):hover,
 .Button--secondary:not(:disabled):active {
-  color: hsl(var(--text-main-base));
+  background-color: hsl(var(--border-color-base) / 0.1);
+  border-color: hsl(var(--border-color-base) / 0.2);
 }
 
 .Button--small {
@@ -66,10 +68,11 @@
 }
 
 .Button:disabled {
-  background-color: hsla(220, 15%, 92.2%, 1);
+  background-color: hsl(var(--border-color-base) / 0.04);
   box-shadow: none;
-  color: hsla(213, 4.5%, 39%, 1);
-  cursor: default;
+  color: hsl(var(--text-muted-base) / 0.4);
+  border: 1px solid hsl(var(--border-color-base) / 0.04);
+  cursor: not-allowed;
   padding: 0 20px;
 }
 
