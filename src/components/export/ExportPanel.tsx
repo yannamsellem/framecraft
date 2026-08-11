@@ -112,6 +112,7 @@ export function ExportPanel() {
             variant="primary"
             onClick={() => void exportVideo()}
             disabled={!canExport || isExporting}
+            small
           >
             <IconFileExport size={18} />
             {isExporting ? `Exporting ${progressPercent}%` : 'Export'}
@@ -120,6 +121,7 @@ export function ExportPanel() {
             variant="primary"
             onClick={handleDownloadClick}
             disabled={!downloadUrl}
+            small
           >
             <IconDownload size={18} />
             Download

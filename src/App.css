@@ -4,7 +4,11 @@
   display: flex;
   justify-content: space-between;
   gap: 24px;
+  background-color: hsl(var(--bg-dark-base));
   border-block-end: 1px solid hsl(var(--border-color-base) / 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .AppHeader__logo {
@@ -25,8 +29,6 @@
 
 .AppMain {
   padding: 24px;
-  height: calc(100% - 72px - 1px);
-  overflow: auto;
 }
 
 .AppPlayerContainer {
