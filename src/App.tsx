@@ -1,6 +1,7 @@
 import { IconUpload } from '@tabler/icons-react'
 import './App.css'
 import { Button } from './components/Button'
+import { ExportPanel } from './components/export/ExportPanel'
 import { VideoPlayer } from './components/player/VideoPlayer'
 import { Timeline } from './components/timeline/Timeline'
 import { useEditorStore } from './store/useEditorStore'
@@ -46,6 +47,7 @@ export default function App() {
             <>
               <VideoPlayer />
               <Timeline />
+              <ExportPanel />
             </>
           ) : (
             <div className="AppEmptyState">
