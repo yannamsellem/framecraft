@@ -1,32 +1,32 @@
-# Framecraft
+# 🎬 Framecraft
 
-Framecraft is the high-performance foundation for a next-generation, purely client-side video editor built with React, WebCodecs, and WebAssembly.
+Framecraft is an experimental client-side video player and editor foundation built with React, WebCodecs, and WebAssembly.
 
-Unlike traditional HTML5 `<video>` tags that abstract away rendering, Framecraft takes full control of the decoding and rendering pipeline to enable the precise frame-by-frame scrubbing required for video editing. By leveraging a custom WASM demuxer, Web Workers, and an `OffscreenCanvas`, Framecraft achieves exact frame alignment, accurate A/V synchronization, and ultra-smooth UI interactions—without relying on any server-side processing.
+Unlike traditional HTML5 `<video>` tags that abstract away rendering, Framecraft takes manual control of the decoding and rendering pipeline. By leveraging a custom WASM demuxer, Web Workers, and `OffscreenCanvas`, the project aims to enable precise frame-by-frame scrubbing, exact frame alignment, and accurate A/V synchronization entirely in the browser without server-side processing.
 
 ## 🚀 Key Features
 
-* **WASM Demuxing**: Uses a custom WebAssembly demuxer (`web-demuxer`) to parse video containers natively in the browser.
-* **WebCodecs API**: Hardware-accelerated decoding of video and audio frames directly in JavaScript.
-* **Multi-Threaded Architecture**: Offloads heavy demuxing and frame rendering to dedicated Web Workers, ensuring the main React UI thread stays at a locked 60fps.
-* **OffscreenCanvas**: Renders decoded video frames to a decoupled canvas element, completely avoiding main-thread DOM repaints.
-* **Master Clock Sync**: Custom A/V synchronization engine ensuring perfect alignment between the WebAudio API and the video render loop.
-* **Modern UI**: Smooth, glassmorphism-inspired player interface with fluid animations powered by Motion (motion.dev).
-* **Zustand State**: Clean, centralized state management for the entire player lifecycle.
+* **Multi-threaded Architecture:** Offloads demuxing and frame rendering to dedicated Web Workers to keep the main UI thread responsive.
+* **Hardware-accelerated Decoding:** Uses a custom WebAssembly demuxer (`web-demuxer`) and the WebCodecs API to decode video directly in JavaScript.
+* **Canvas Rendering:** Renders decoded video frames to a decoupled `OffscreenCanvas` to avoid main-thread DOM repaints.
+* **Custom A/V Sync:** Implements a custom synchronization engine to align the WebAudio API with the video render loop.
+* **Timeline Interface:** Includes an interactive timeline with zoom controls, dynamic scaling, and block dragging.
+* **State Management:** Uses Zustand for centralized player state management.
 
 ## 🛠 Tech Stack
 
 - **React 19** (TypeScript, Vite)
-- **WebCodecs & OffscreenCanvas** (Rendering & Decoding)
-- **Web Workers** (Multi-threading)
-- **Zustand** (State Management)
-- **Motion** (motion.dev, UI Animations)
-- **Tabler Icons** (UI Assets)
+- **WebCodecs & OffscreenCanvas** 
+- **Web Workers** 
+- **Zustand** 
+- **Motion** 
+- **Tabler Icons** 
 
 ## 📦 Getting Started
 
 ### Prerequisites
-Make sure you have Node.js (v18+) and npm installed.
+- [Node.js](https://nodejs.org/) (v18+) 
+- npm
 
 ### Installation
 
@@ -46,14 +46,25 @@ Make sure you have Node.js (v18+) and npm installed.
    npm run dev
    ```
 
-4. Open your browser and navigate to the local server address (usually `http://localhost:5173`).
+4. Navigate to `http://localhost:5173`.
 
 ## 🎮 Controls
 
-- **Click / Tap**: Toggle Play/Pause
-- **Spacebar**: Toggle Play/Pause
-- **Left / Right Arrows**: Seek backward or forward by 10 seconds
-- **Esc**: Exit fullscreen mode
+- **Timeline**: Scrub through the timeline, drag blocks, and use the zoom in/out/reset controls.
+- **Click / Tap**: Toggle Play/Pause on the video canvas.
+- **Spacebar**: Toggle Play/Pause.
+- **Left / Right Arrows**: Seek backward or forward by 10 seconds.
+- **Esc**: Exit fullscreen mode.
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to open an issue to discuss architecture, report a bug, or open a Pull Request for new features and improvements.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## 📜 License
 
