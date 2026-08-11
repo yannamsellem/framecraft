@@ -1,14 +1,12 @@
-import type { ChunkPayload } from './types'
 import type { RenderInputEvent } from '../workers/render.worker'
+import RenderWorker from '../workers/render.worker?worker'
+import type { ChunkPayload } from './types'
 
 export class RenderService {
   private worker: Worker | null = null
 
   constructor() {
-    this.worker = new Worker(
-      new URL('../workers/render.worker.ts', import.meta.url),
-      { type: 'module' },
-    )
+    this.worker = new RenderWorker()
   }
 
   public init(canvas: HTMLCanvasElement) {

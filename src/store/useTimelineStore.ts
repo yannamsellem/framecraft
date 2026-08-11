@@ -20,26 +20,21 @@ interface Actions {
 
 export type TimelineState = State & Actions
 
-// Helper function to merge overlapping blocks
 function mergeBlocks(blocks: TimelineBlock[]): TimelineBlock[] {
   if (blocks.length === 0) return []
 
-  // Sort blocks by start time
-  const sorted = [...blocks].sort((a, b) => a.start - b.start)
+  const sorted = blocks.toSorted((a, b) => a.start - b.start)
   const merged: TimelineBlock[] = [sorted[0]]
 
-  for (let i = 1; i < sorted.length; i++) {
+  let i = 0
+  while (i < sorted.length) {
     const current = sorted[i]
     const last = merged[merged.length - 1]
 
-    // If current block overlaps with the last block in merged array
-    if (current.start <= last.end) {
-      // Merge them by extending the end time
-      last.end = Math.max(last.end, current.end)
-    } else {
-      // No overlap, just push
-      merged.push(current)
-    }
+    if (current.start <= last.end) last.end = Math.max(last.end, current.end)
+    else merged.push(current)
+
+    i += 1
   }
 
   return merged
@@ -53,13 +48,12 @@ export const useTimelineStore = create<TimelineState>(
     },
     (set, get) => ({
       addOrUpdateBlock: (start, end, id) => {
-        // Enforce valid start/end bounds
         const safeStart = Math.min(start, end)
         const safeEnd = Math.max(start, end)
-        
-        // Prevent zero-width blocks from breaking things (minimum 100ms)
+
         const minDuration = 0.1
-        const finalEnd = safeEnd - safeStart < minDuration ? safeStart + minDuration : safeEnd
+        const finalEnd =
+          safeEnd - safeStart < minDuration ? safeStart + minDuration : safeEnd
 
         const newBlock = {
           id: id || crypto.randomUUID(),
@@ -68,24 +62,21 @@ export const useTimelineStore = create<TimelineState>(
         }
 
         const currentBlocks = get().blocks
-        // Filter out the one we're updating
         const otherBlocks = currentBlocks.filter((b) => b.id !== newBlock.id)
+        const merged = mergeBlocks(otherBlocks.concat(newBlock))
 
-        const merged = mergeBlocks([...otherBlocks, newBlock])
-        
-        // If the active block was merged out of existence (id no longer exists),
-        // we might want to clear it, but let's just make sure activeBlockId is still valid.
         const currentActive = get().activeBlockId
         const activeStillExists = merged.some((b) => b.id === currentActive)
-        
+
         set({
           blocks: merged,
-          activeBlockId: activeStillExists ? currentActive : null
+          activeBlockId: activeStillExists ? currentActive : null,
         })
       },
       deleteBlock: (id) => {
         const blocks = get().blocks.filter((b) => b.id !== id)
-        const activeBlockId = get().activeBlockId === id ? null : get().activeBlockId
+        const activeBlockId =
+          get().activeBlockId === id ? null : get().activeBlockId
         set({ blocks, activeBlockId })
       },
       setActiveBlock: (id) => set({ activeBlockId: id }),
