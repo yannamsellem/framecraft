@@ -27,6 +27,24 @@
   gap: 12px;
 }
 
+.AppHeader__github-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid hsl(var(--border-color-base) / 0.1);
+  border-radius: 4px;
+  color: hsl(var(--text-main-base));
+  transition: all 0.2s ease;
+  height: 30px;
+  aspect-ratio: 1;
+}
+
+.AppHeader__github-link:hover {
+  background: hsl(var(--border-color-base) / 0.1);
+  color: hsl(var(--primary-base));
+}
+
 .AppMain {
   padding: 24px;
 }

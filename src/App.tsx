@@ -1,4 +1,4 @@
-import { IconUpload } from '@tabler/icons-react'
+import { IconUpload, IconBrandGithub } from '@tabler/icons-react'
 import './App.css'
 import { Button } from './components/Button'
 import { ExportPanel } from './components/export/ExportPanel'
@@ -38,6 +38,16 @@ export default function App() {
               <IconUpload stroke={2} size={16} /> Import Video
             </Button>
           )}
+          <a
+            href="https://github.com/yannamsellem/framecraft"
+            target="_blank"
+            rel="noreferrer noopener"
+            className="AppHeader__github-link"
+            aria-label="View source on GitHub"
+            title="View on GitHub"
+          >
+            <IconBrandGithub size={20} stroke={1.5} />
+          </a>
         </div>
       </header>
 
