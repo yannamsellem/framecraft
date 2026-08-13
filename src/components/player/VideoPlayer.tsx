@@ -34,9 +34,19 @@ export function VideoPlayer() {
   const [isHoveringControls, setIsHoveringControls] = useState(false)
   const hideControlsTimeoutRef = useRef<number | null>(null)
 
+  const [hasStarted, setHasStarted] = useState(false)
   const [playbackEffect, setPlaybackEffect] = useAutoResetState<
     'play' | 'pause' | 'forward' | 'backward' | null
   >(null, { after: 150 })
+
+  // Reset hasStarted when a new video is loaded (duration resets to 0 then > 0)
+  useEffect(() => {
+    if (duration === 0) setHasStarted(false)
+  }, [duration])
+
+  useEffect(() => {
+    if (isPlaying && !hasStarted) setHasStarted(true)
+  }, [isPlaying, hasStarted])
 
   const handleMouseMove = () => {
     setIsHovering(true)
@@ -111,7 +121,7 @@ export function VideoPlayer() {
 
   const [isFullscreen, toggleFullscreen] = useIsFullScreen(containerRef)
 
-  const isPristine = currentTime === 0 && !isPlaying && duration > 0
+  const isPristine = !hasStarted && duration > 0
 
   const handleSeekRelative = useCallback(
     (seconds: number) => {

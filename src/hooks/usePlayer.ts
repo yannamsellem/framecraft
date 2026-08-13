@@ -47,6 +47,9 @@ export const usePlayer = () => {
     if (!file) return
     if (!controllerRef.current) return
 
+    controllerRef.current.pause()
+    controllerRef.current.seek(0)
+
     controllerRef.current
       .load(file)
       .catch((e) => console.error('usePlayer: Failed to load file', e))

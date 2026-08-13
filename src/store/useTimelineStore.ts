@@ -16,6 +16,7 @@ interface Actions {
   addOrUpdateBlock: (start: number, end: number, id?: string) => void
   deleteBlock: (id: string) => void
   setActiveBlock: (id: string | null) => void
+  resetTimeline: () => void
 }
 
 export type TimelineState = State & Actions
@@ -80,6 +81,7 @@ export const useTimelineStore = create<TimelineState>(
         set({ blocks, activeBlockId })
       },
       setActiveBlock: (id) => set({ activeBlockId: id }),
+      resetTimeline: () => set({ blocks: [], activeBlockId: null }),
     }),
   ),
 )

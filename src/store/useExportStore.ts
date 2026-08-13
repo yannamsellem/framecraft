@@ -25,6 +25,7 @@ interface Actions {
   exportVideo: () => Promise<void>
   clearLogs: () => void
   clearDownload: () => void
+  resetExport: () => void
 }
 
 export type ExportState = State & Actions
@@ -63,7 +64,18 @@ export const useExportStore = create<ExportState>(
         if (url) URL.revokeObjectURL(url)
         set({ downloadUrl: null, downloadFilename: '', progress: 0 })
       },
-
+      resetExport: () => {
+        const url = get().downloadUrl
+        if (url) URL.revokeObjectURL(url)
+        set({
+          isExporting: false,
+          progress: 0,
+          statusText: '',
+          logs: [],
+          downloadUrl: null,
+          downloadFilename: '',
+        })
+      },
       exportVideo: async () => {
         const { file } = useEditorStore.getState()
         const { blocks } = useTimelineStore.getState()

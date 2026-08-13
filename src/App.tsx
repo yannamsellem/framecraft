@@ -4,6 +4,8 @@ import { Button } from './components/Button'
 import { ExportPanel } from './components/export/ExportPanel'
 import { VideoPlayer } from './components/player/VideoPlayer'
 import { Timeline } from './components/timeline/Timeline'
+import { useExportStore } from './store/useExportStore'
+import { useTimelineStore } from './store/useTimelineStore'
 import { useEditorStore } from './store/useEditorStore'
 
 function handleImportClick() {
@@ -12,12 +14,16 @@ function handleImportClick() {
 
 export default function App() {
   const { file, setFile } = useEditorStore()
+  const { resetTimeline } = useTimelineStore()
+  const { resetExport } = useExportStore()
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
 
     setFile(file)
+    resetTimeline()
+    resetExport()
     event.target.value = ''
   }
 
